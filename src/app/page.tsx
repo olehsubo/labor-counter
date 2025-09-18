@@ -1,103 +1,223 @@
-import Image from "next/image";
+"use client";
+
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+type ContractionState = "idle" | "contracting";
+
+type ContractionEntry = {
+  start: number;
+  end: number;
+  durationSec: number;
+  intervalSec: number | null;
+};
+
+const MIN_DURATION_SEC = 5;
+const MAX_DURATION_SEC = 180;
+const TAP_DEBOUNCE_MS = 1000;
+const MAX_RECENT_ENTRIES = 10;
+
+const timeFormatter = new Intl.DateTimeFormat(undefined, {
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+function formatDuration(seconds: number): string {
+  const safeSeconds = Math.max(0, seconds);
+  const mm = Math.floor(safeSeconds / 60)
+    .toString()
+    .padStart(2, "0");
+  const ss = (safeSeconds % 60).toString().padStart(2, "0");
+  return `${mm}:${ss}`;
+}
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [state, setState] = useState<ContractionState>("idle");
+  const [startTimestamp, setStartTimestamp] = useState<number | null>(null);
+  const [elapsedSec, setElapsedSec] = useState(0);
+  const [entries, setEntries] = useState<ContractionEntry[]>([]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const lastTapRef = useRef<number>(0);
+
+  const handleStart = useCallback(() => {
+    if (state === "contracting") {
+      return;
+    }
+
+    setStartTimestamp(Date.now());
+    setElapsedSec(0);
+    setState("contracting");
+    void navigator.vibrate?.(40);
+  }, [state]);
+
+  const stopContraction = useCallback(
+    (options: { auto?: boolean } = {}) => {
+      if (state !== "contracting" || startTimestamp == null) {
+        return;
+      }
+
+      const now = Date.now();
+      const rawElapsedSec = Math.floor((now - startTimestamp) / 1000);
+      if (!options.auto && rawElapsedSec < MIN_DURATION_SEC) {
+        return;
+      }
+
+      const durationSec = Math.min(rawElapsedSec, MAX_DURATION_SEC);
+      const end = startTimestamp + durationSec * 1000;
+
+      setEntries((prev) => {
+        const previousEnd = prev[0]?.end ?? null;
+        const intervalSec =
+          previousEnd != null
+            ? Math.max(0, Math.floor((startTimestamp - previousEnd) / 1000))
+            : null;
+
+        const nextEntries: ContractionEntry[] = [
+          {
+            start: startTimestamp,
+            end,
+            durationSec,
+            intervalSec,
+          },
+          ...prev,
+        ];
+
+        return nextEntries.slice(0, MAX_RECENT_ENTRIES);
+      });
+
+      setState("idle");
+      setStartTimestamp(null);
+      setElapsedSec(0);
+      void navigator.vibrate?.(20);
+    },
+    [startTimestamp, state]
+  );
+
+  const handleToggle = useCallback(() => {
+    const now = Date.now();
+    if (now - lastTapRef.current < TAP_DEBOUNCE_MS) {
+      return;
+    }
+    lastTapRef.current = now;
+
+    if (state === "idle") {
+      handleStart();
+      return;
+    }
+
+    stopContraction();
+  }, [handleStart, state, stopContraction]);
+
+  useEffect(() => {
+    if (state !== "contracting" || startTimestamp == null) {
+      return undefined;
+    }
+
+    const tick = () => {
+      const now = Date.now();
+      const nextElapsed = Math.floor((now - startTimestamp) / 1000);
+
+      if (nextElapsed >= MAX_DURATION_SEC) {
+        stopContraction({ auto: true });
+        return;
+      }
+
+      setElapsedSec(nextElapsed);
+    };
+
+    tick();
+    const intervalId = setInterval(tick, 1000);
+    return () => clearInterval(intervalId);
+  }, [startTimestamp, state, stopContraction]);
+
+  const displayElapsed = useMemo(() => {
+    if (state !== "contracting") {
+      return "00:00";
+    }
+    return formatDuration(elapsedSec);
+  }, [elapsedSec, state]);
+
+  return (
+    <div className="min-h-screen bg-sky-50 text-slate-900">
+      <main className="mx-auto flex max-w-md flex-col gap-12 px-6 py-16">
+        <div className="flex flex-col items-center gap-5 text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-sky-500">
+            Labor Counter
+          </p>
+          <h1 className="text-3xl font-semibold text-slate-900">
+            Gentle support for tracking contractions
+          </h1>
+          <p className="text-sm text-slate-600">
+            Tap once to begin timing and again to log each contraction.
+          </p>
         </div>
+
+        <button
+          type="button"
+          onClick={handleToggle}
+          className={`flex h-48 w-full flex-col items-center justify-center gap-4 rounded-[32px] border-2 text-xl font-semibold transition-transform focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-400 ${
+            state === "contracting"
+              ? "border-rose-200 bg-rose-100 text-rose-700 shadow-[0_25px_50px_-12px_rgba(244,114,182,0.35)]"
+              : "border-sky-200 bg-white text-sky-700 shadow-[0_20px_45px_-15px_rgba(14,165,233,0.35)]"
+          } active:scale-[0.99]`}
+        >
+          <span className="text-5xl font-mono tabular-nums tracking-tight">
+            {displayElapsed}
+          </span>
+          <span>
+            {state === "contracting" ? "Stop contraction" : "Start contraction"}
+          </span>
+          {state === "contracting" ? (
+            <span className="text-xs uppercase tracking-[0.35em] text-rose-500">
+              Contracting
+            </span>
+          ) : (
+            <span className="text-xs uppercase tracking-[0.35em] text-sky-500">
+              Ready
+            </span>
+          )}
+        </button>
+
+        <section className="space-y-4">
+          <header className="flex items-center justify-between text-xs font-medium uppercase tracking-[0.35em] text-slate-500">
+            <span>Recent</span>
+            <span>Last {Math.min(entries.length, MAX_RECENT_ENTRIES)}</span>
+          </header>
+          <div className="divide-y divide-slate-200 overflow-hidden rounded-3xl border border-slate-200 bg-white">
+            {entries.length === 0 ? (
+              <p className="px-6 py-10 text-center text-sm text-slate-500">
+                Contractions will appear here with their durations and intervals.
+              </p>
+            ) : (
+              entries.map((entry, index) => {
+                const displayIndex = entries.length - index;
+                const durationLabel = formatDuration(entry.durationSec);
+                const intervalLabel =
+                  entry.intervalSec != null
+                    ? `+${formatDuration(entry.intervalSec)}`
+                    : "—";
+
+                return (
+                  <article
+                    key={entry.start}
+                    className="grid grid-cols-[auto_auto_auto_auto] items-center gap-4 px-6 py-4 text-sm text-slate-700"
+                  >
+                    <span className="font-semibold text-slate-400">#{displayIndex}</span>
+                    <span className="font-mono text-base tabular-nums text-slate-800">
+                      {timeFormatter.format(entry.start)}
+                    </span>
+                    <span className="font-mono tabular-nums text-slate-900">
+                      {durationLabel}
+                    </span>
+                    <span className="font-mono tabular-nums text-slate-500">
+                      {intervalLabel}
+                    </span>
+                  </article>
+                );
+              })
+            )}
+          </div>
+        </section>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }
