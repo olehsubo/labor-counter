@@ -32,6 +32,16 @@ export type EditingState = {
   originalEnd: number;
 };
 
+type ConfirmationModalState = {
+  isOpen: boolean;
+  title: string;
+  message: string;
+  confirmText?: string;
+  cancelText?: string;
+  variant?: "default" | "warning" | "danger";
+  onConfirm: () => void;
+};
+
 type UseContractionTrackerReturn = {
   contractionState: ContractionState;
   displayElapsed: string;
@@ -51,12 +61,15 @@ type UseContractionTrackerReturn = {
   resetEditingDraft: () => void;
   saveEdit: () => void;
   cancelEdit: () => void;
+  confirmationModal: ConfirmationModalState;
+  closeConfirmationModal: () => void;
 };
 
 export function useContractionTracker(): UseContractionTrackerReturn {
   const initialSessionId = useMemo(() => getTodaySessionId(), []);
 
-  const [contractionState, setContractionState] = useState<ContractionState>("idle");
+  const [contractionState, setContractionState] =
+    useState<ContractionState>("idle");
   const [startTimestamp, setStartTimestamp] = useState<number | null>(null);
   const [elapsedSec, setElapsedSec] = useState(0);
   const [sessions, setSessions] = useState<Record<string, Session>>(() => ({
@@ -66,10 +79,18 @@ export function useContractionTracker(): UseContractionTrackerReturn {
   const [hasHydrated, setHasHydrated] = useState(false);
   const [storageWarning, setStorageWarning] = useState(false);
   const [editing, setEditing] = useState<EditingState | null>(null);
+  const [confirmationModal, setConfirmationModal] =
+    useState<ConfirmationModalState>({
+      isOpen: false,
+      title: "",
+      message: "",
+      onConfirm: () => {},
+    });
 
   const lastTapRef = useRef<number>(0);
 
-  const currentSession = sessions[currentSessionId] ?? buildSession(currentSessionId);
+  const currentSession =
+    sessions[currentSessionId] ?? buildSession(currentSessionId);
 
   const timelineEntries = useMemo(
     () => deriveDisplayEntries(currentSession.entries),
@@ -81,7 +102,10 @@ export function useContractionTracker(): UseContractionTrackerReturn {
     return [...subset].reverse();
   }, [timelineEntries]);
 
-  const stats = useMemo<StatsSummary>(() => calculateStats(timelineEntries), [timelineEntries]);
+  const stats = useMemo<StatsSummary>(
+    () => calculateStats(timelineEntries),
+    [timelineEntries]
+  );
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -107,7 +131,10 @@ export function useContractionTracker(): UseContractionTrackerReturn {
 
           setSessions(hydratedSessions);
 
-          if (parsed.currentSessionId && hydratedSessions[parsed.currentSessionId]) {
+          if (
+            parsed.currentSessionId &&
+            hydratedSessions[parsed.currentSessionId]
+          ) {
             setCurrentSessionId(parsed.currentSessionId);
           } else {
             setCurrentSessionId((prev) =>
@@ -188,7 +215,10 @@ export function useContractionTracker(): UseContractionTrackerReturn {
 
   useEffect(() => {
     const estimateStorage = async () => {
-      if (!("storage" in navigator) || typeof navigator.storage?.estimate !== "function") {
+      if (
+        !("storage" in navigator) ||
+        typeof navigator.storage?.estimate !== "function"
+      ) {
         setStorageWarning(false);
         return;
       }
@@ -305,59 +335,74 @@ export function useContractionTracker(): UseContractionTrackerReturn {
     return () => clearInterval(intervalId);
   }, [contractionState, startTimestamp, stopContraction]);
 
+  const closeConfirmationModal = useCallback(() => {
+    setConfirmationModal((prev) => ({ ...prev, isOpen: false }));
+  }, []);
+
   const undoLast = useCallback(() => {
     const session = sessions[currentSessionId];
     if (!session || session.entries.length === 0) {
       return;
     }
 
-    if (
-      typeof window !== "undefined" &&
-      !window.confirm("Undo the most recent contraction entry?")
-    ) {
-      return;
-    }
+    setConfirmationModal({
+      isOpen: true,
+      title: "Undo Last Entry",
+      message: "Undo the most recent contraction entry?",
+      confirmText: "Undo",
+      cancelText: "Cancel",
+      variant: "warning",
+      onConfirm: () => {
+        setSessions((prev) => {
+          const existing = prev[currentSessionId];
+          if (!existing || existing.entries.length === 0) {
+            return prev;
+          }
 
-    setSessions((prev) => {
-      const existing = prev[currentSessionId];
-      if (!existing || existing.entries.length === 0) {
-        return prev;
-      }
+          const updatedEntries = sortEntriesChronologically(
+            existing.entries
+          ).slice(0, -1);
 
-      const updatedEntries = sortEntriesChronologically(existing.entries).slice(0, -1);
-
-      return {
-        ...prev,
-        [currentSessionId]: {
-          ...existing,
-          entries: updatedEntries,
-        },
-      };
+          return {
+            ...prev,
+            [currentSessionId]: {
+              ...existing,
+              entries: updatedEntries,
+            },
+          };
+        });
+        closeConfirmationModal();
+      },
     });
-  }, [currentSessionId, sessions]);
+  }, [currentSessionId, sessions, closeConfirmationModal]);
 
   const startNewSession = useCallback(() => {
     const todayId = getTodaySessionId();
 
-    if (
-      typeof window !== "undefined" &&
-      !window.confirm("Start a fresh session for today? Previous entries stay in history.")
-    ) {
-      return;
-    }
+    setConfirmationModal({
+      isOpen: true,
+      title: "Start New Session",
+      message:
+        "Start a fresh session for today? Previous entries stay in history.",
+      confirmText: "Start New Session",
+      cancelText: "Cancel",
+      variant: "default",
+      onConfirm: () => {
+        setSessions((prev) => {
+          if (prev[todayId]) {
+            return prev;
+          }
+          return {
+            ...prev,
+            [todayId]: buildSession(todayId),
+          };
+        });
 
-    setSessions((prev) => {
-      if (prev[todayId]) {
-        return prev;
-      }
-      return {
-        ...prev,
-        [todayId]: buildSession(todayId),
-      };
+        setCurrentSessionId(todayId);
+        closeConfirmationModal();
+      },
     });
-
-    setCurrentSessionId(todayId);
-  }, []);
+  }, [closeConfirmationModal]);
 
   const openEditor = useCallback(
     (sessionId: string, entryId: string) => {
@@ -383,32 +428,42 @@ export function useContractionTracker(): UseContractionTrackerReturn {
     [sessions]
   );
 
-  const adjustEditingTime = useCallback((field: "start" | "end", deltaSeconds: number) => {
-    setEditing((previous) => {
-      if (!previous) {
-        return previous;
-      }
+  const adjustEditingTime = useCallback(
+    (field: "start" | "end", deltaSeconds: number) => {
+      setEditing((previous) => {
+        if (!previous) {
+          return previous;
+        }
 
-      const base = field === "start" ? previous.originalStart : previous.originalEnd;
-      const min = base - 120_000;
-      const max = base + 120_000;
-      const draftKey = field === "start" ? "draftStart" : "draftEnd";
+        const base =
+          field === "start" ? previous.originalStart : previous.originalEnd;
+        const min = base - 120_000;
+        const max = base + 120_000;
+        const draftKey = field === "start" ? "draftStart" : "draftEnd";
 
-      let nextValue = previous[draftKey] + deltaSeconds * 1000;
-      nextValue = Math.min(Math.max(nextValue, min), max);
+        let nextValue = previous[draftKey] + deltaSeconds * 1000;
+        nextValue = Math.min(Math.max(nextValue, min), max);
 
-      if (field === "start") {
-        nextValue = Math.min(nextValue, previous.draftEnd - MIN_DURATION_SEC * 1000);
-      } else {
-        nextValue = Math.max(nextValue, previous.draftStart + MIN_DURATION_SEC * 1000);
-      }
+        if (field === "start") {
+          nextValue = Math.min(
+            nextValue,
+            previous.draftEnd - MIN_DURATION_SEC * 1000
+          );
+        } else {
+          nextValue = Math.max(
+            nextValue,
+            previous.draftStart + MIN_DURATION_SEC * 1000
+          );
+        }
 
-      return {
-        ...previous,
-        [draftKey]: nextValue,
-      };
-    });
-  }, []);
+        return {
+          ...previous,
+          [draftKey]: nextValue,
+        };
+      });
+    },
+    []
+  );
 
   const resetEditingDraft = useCallback(() => {
     setEditing((previous) => {
@@ -429,7 +484,9 @@ export function useContractionTracker(): UseContractionTrackerReturn {
       return;
     }
 
-    const nextDurationSec = Math.floor((editing.draftEnd - editing.draftStart) / 1000);
+    const nextDurationSec = Math.floor(
+      (editing.draftEnd - editing.draftStart) / 1000
+    );
     if (nextDurationSec < MIN_DURATION_SEC) {
       if (typeof window !== "undefined") {
         window.alert(`Duration must be at least ${MIN_DURATION_SEC} seconds.`);
@@ -522,5 +579,7 @@ export function useContractionTracker(): UseContractionTrackerReturn {
     resetEditingDraft,
     saveEdit,
     cancelEdit,
+    confirmationModal,
+    closeConfirmationModal,
   };
 }

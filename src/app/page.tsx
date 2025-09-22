@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { ConfirmationModal } from "../components/ConfirmationModal";
 import { EditEntryModal } from "../components/EditEntryModal";
 import { HistoryView } from "../components/HistoryView";
 import { LiveView } from "../components/LiveView";
@@ -31,6 +32,8 @@ export default function Home() {
     resetEditingDraft,
     saveEdit,
     cancelEdit,
+    confirmationModal,
+    closeConfirmationModal,
   } = useContractionTracker();
 
   return (
@@ -46,7 +49,8 @@ export default function Home() {
             Gentle support for tracking contractions
           </h1>
           <p className="text-sm text-slate-600">
-            Tap once to begin timing and again to log each contraction. Everything is saved for you, even offline.
+            Tap once to begin timing and again to log each contraction.
+            Everything is saved for you, even offline.
           </p>
         </div>
 
@@ -80,6 +84,17 @@ export default function Home() {
           onSave={saveEdit}
           onReset={resetEditingDraft}
           onAdjust={adjustEditingTime}
+        />
+
+        <ConfirmationModal
+          isOpen={confirmationModal.isOpen}
+          title={confirmationModal.title}
+          message={confirmationModal.message}
+          confirmText={confirmationModal.confirmText}
+          cancelText={confirmationModal.cancelText}
+          variant={confirmationModal.variant}
+          onConfirm={confirmationModal.onConfirm}
+          onCancel={closeConfirmationModal}
         />
       </main>
     </div>
