@@ -41,20 +41,7 @@ export function LiveView({
         <span className="text-5xl font-mono tabular-nums tracking-tight">
           {displayElapsed}
         </span>
-        <span>
-          {contractionState === "contracting"
-            ? "Stop contraction"
-            : "Start contraction"}
-        </span>
-        {contractionState === "contracting" ? (
-          <span className="text-xs uppercase tracking-[0.35em] text-[#666666]">
-            Contracting
-          </span>
-        ) : (
-          <span className="text-xs uppercase tracking-[0.35em] text-[#666666]">
-            Ready
-          </span>
-        )}
+        <span>{contractionState === "contracting" ? "Stop" : "Start"}</span>
       </button>
 
       <div className="flex flex-wrap items-center justify-center gap-3">
@@ -64,33 +51,33 @@ export function LiveView({
           disabled={recentEntries.length === 0}
           className="rounded-full border border-[#CFE5D6] bg-[#CFE5D6] px-5 py-2 text-sm font-medium text-[#333333] transition hover:border-[#B8D9C4] hover:bg-[#B8D9C4] disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Undo last
+          Undo
         </button>
         <button
           type="button"
           onClick={onNewSession}
           className="rounded-full border border-[#D7EAF3] bg-[#D7EAF3] px-5 py-2 text-sm font-medium text-[#333333] transition hover:border-[#C5E1F0] hover:bg-[#C5E1F0]"
         >
-          New session
+          New Day
         </button>
         <button
           type="button"
           onClick={onShowHistory}
           className="rounded-full border border-transparent px-5 py-2 text-sm font-medium text-[#666666] underline-offset-4 transition hover:underline hover:text-[#333333]"
         >
-          View full history
+          History
         </button>
       </div>
 
       <section className="space-y-4">
         <header className="flex items-center justify-between text-xs font-medium uppercase tracking-[0.35em] text-[#666666]">
           <span>Recent</span>
-          <span>Last {Math.min(recentEntries.length, MAX_RECENT_ENTRIES)}</span>
+          <span>{Math.min(recentEntries.length, MAX_RECENT_ENTRIES)}</span>
         </header>
         <div className="divide-y divide-[#CFE5D6] overflow-hidden rounded-3xl border border-[#CFE5D6] bg-[#F8F3ED]">
           {recentEntries.length === 0 ? (
             <p className="px-6 py-10 text-center text-sm text-[#666666]">
-              Contractions will appear here with their durations and intervals.
+              Your contractions will appear here
             </p>
           ) : (
             recentEntries.map((entry) => {

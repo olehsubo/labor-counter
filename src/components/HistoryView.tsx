@@ -88,7 +88,7 @@ export function HistoryView({
             <p className="mt-2 text-2xl font-semibold text-[#333333]">
               {stats.totalToday}
             </p>
-            <p className="text-[11px] text-[#666666]">Contractions logged</p>
+            <p className="text-[11px] text-[#666666]">Logged</p>
           </div>
           <div className="rounded-2xl bg-[#CFE5D6] px-4 py-4">
             <p className="text-xs font-medium uppercase tracking-[0.35em] text-[#666666]">
@@ -97,7 +97,7 @@ export function HistoryView({
             <p className="mt-2 text-2xl font-semibold text-[#333333]">
               {formatDuration(stats.averageDurationSec)}
             </p>
-            <p className="text-[11px] text-[#666666]">Active phase</p>
+            <p className="text-[11px] text-[#666666]">Duration</p>
           </div>
           <div className="rounded-2xl bg-[#FFE4D1] px-4 py-4">
             <p className="text-xs font-medium uppercase tracking-[0.35em] text-[#666666]">
@@ -108,7 +108,7 @@ export function HistoryView({
                 ? formatDuration(stats.averageIntervalSec)
                 : "—"}
             </p>
-            <p className="text-[11px] text-[#666666]">Rest between</p>
+            <p className="text-[11px] text-[#666666]">Between</p>
           </div>
         </div>
         <div className="mt-5 flex justify-center">
@@ -121,20 +121,20 @@ export function HistoryView({
             disabled={timelineEntries.length === 0}
             className="rounded-full border border-[#FADADD] bg-[#FADADD] px-5 py-2 text-sm font-medium text-[#333333] transition hover:border-[#F7C5CA] hover:bg-[#F7C5CA] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isHoldingClear ? "Keep holding to clear" : "Hold to clear today"}
+            {isHoldingClear ? "Keep holding..." : "Hold to clear"}
           </button>
         </div>
       </section>
 
       <section className="space-y-4">
         <header className="flex items-center justify-between text-xs font-medium uppercase tracking-[0.35em] text-[#666666]">
-          <span>Today&apos;s timeline</span>
-          <span>{stats.totalToday} entries</span>
+          <span>Timeline</span>
+          <span>{stats.totalToday}</span>
         </header>
         <div className="max-h-80 overflow-y-auto rounded-3xl border border-[#CFE5D6] bg-[#F8F3ED]">
           {timelineEntries.length === 0 ? (
             <p className="px-6 py-10 text-center text-sm text-[#666666]">
-              No contractions logged yet today.
+              No contractions yet today
             </p>
           ) : (
             <div className="divide-y divide-[#CFE5D6] text-sm text-[#333333]">
@@ -174,12 +174,12 @@ export function HistoryView({
 
       <section className="space-y-4">
         <header className="flex items-center justify-between text-xs font-medium uppercase tracking-[0.35em] text-[#666666]">
-          <span>Past sessions</span>
+          <span>Previous days</span>
           <span>{pastSessionIds.length}</span>
         </header>
         {pastSessionIds.length === 0 ? (
           <p className="rounded-3xl border border-dashed border-[#CFE5D6] px-6 py-10 text-center text-sm text-[#666666]">
-            Previous days will appear here once logged.
+            Previous days will appear here
           </p>
         ) : (
           <div className="space-y-4">
@@ -201,12 +201,12 @@ export function HistoryView({
                         {formatSessionLabel(sessionId)}
                       </p>
                       <p className="text-xs text-[#666666]">
-                        {summary.totalToday} contractions • Avg{" "}
-                        {formatDuration(summary.averageDurationSec)}
+                        {summary.totalToday} contractions •{" "}
+                        {formatDuration(summary.averageDurationSec)} avg
                         {summary.hasIntervalData
-                          ? ` • Interval ${formatDuration(
+                          ? ` • ${formatDuration(
                               summary.averageIntervalSec
-                            )}`
+                            )} between`
                           : ""}
                       </p>
                     </div>
@@ -217,7 +217,7 @@ export function HistoryView({
                   <div className="divide-y divide-[#CFE5D6]">
                     {entriesForSession.length === 0 ? (
                       <p className="px-6 py-6 text-center text-sm text-[#666666]">
-                        No contractions recorded.
+                        No contractions
                       </p>
                     ) : (
                       entriesForSession.map((entry) => {

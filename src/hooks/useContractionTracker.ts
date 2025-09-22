@@ -488,47 +488,58 @@ export function useContractionTracker(): UseContractionTrackerReturn {
       (editing.draftEnd - editing.draftStart) / 1000
     );
     if (nextDurationSec < MIN_DURATION_SEC) {
-      if (typeof window !== "undefined") {
-        window.alert(`Duration must be at least ${MIN_DURATION_SEC} seconds.`);
-      }
-      return;
-    }
-
-    if (
-      typeof window !== "undefined" &&
-      !window.confirm("Save changes to this entry?")
-    ) {
-      return;
-    }
-
-    setSessions((prev) => {
-      const session = prev[editing.sessionId];
-      if (!session) {
-        return prev;
-      }
-
-      const updatedEntries = session.entries.map((entry) =>
-        entry.id === editing.entryId
-          ? {
-              ...entry,
-              start: editing.draftStart,
-              end: editing.draftEnd,
-            }
-          : entry
-      );
-
-      return {
-        ...prev,
-        [editing.sessionId]: {
-          ...session,
-          entries: sortEntriesChronologically(updatedEntries),
+      setConfirmationModal({
+        isOpen: true,
+        title: "Invalid Duration",
+        message: `Duration must be at least ${MIN_DURATION_SEC} seconds.`,
+        confirmText: "OK",
+        variant: "warning",
+        onConfirm: () => {
+          closeConfirmationModal();
         },
-      };
-    });
+      });
+      return;
+    }
 
-    setEditing(null);
-    void navigator.vibrate?.(15);
-  }, [editing]);
+    setConfirmationModal({
+      isOpen: true,
+      title: "Save Changes",
+      message: "Save changes to this entry?",
+      confirmText: "Save",
+      cancelText: "Cancel",
+      variant: "default",
+      onConfirm: () => {
+        setSessions((prev) => {
+          const session = prev[editing.sessionId];
+          if (!session) {
+            return prev;
+          }
+
+          const updatedEntries = session.entries.map((entry) =>
+            entry.id === editing.entryId
+              ? {
+                  ...entry,
+                  start: editing.draftStart,
+                  end: editing.draftEnd,
+                }
+              : entry
+          );
+
+          return {
+            ...prev,
+            [editing.sessionId]: {
+              ...session,
+              entries: sortEntriesChronologically(updatedEntries),
+            },
+          };
+        });
+
+        setEditing(null);
+        closeConfirmationModal();
+        void navigator.vibrate?.(15);
+      },
+    });
+  }, [editing, closeConfirmationModal]);
 
   const cancelEdit = useCallback(() => {
     setEditing(null);
