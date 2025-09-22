@@ -37,18 +37,18 @@ export default function Home() {
   } = useContractionTracker();
 
   return (
-    <div className="min-h-screen bg-sky-50 text-slate-900">
+    <div className="min-h-screen bg-[#F8F3ED] text-[#333333]">
       <main className="mx-auto flex max-w-3xl flex-col gap-10 px-6 py-16">
         {storageWarning && <StorageWarningBanner />}
 
         <div className="flex flex-col items-center gap-5 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-sky-500">
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#CFE5D6]">
             Labor Counter
           </p>
-          <h1 className="text-3xl font-semibold text-slate-900">
+          <h1 className="text-3xl font-semibold text-[#333333]">
             Gentle support for tracking contractions
           </h1>
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-[#666666]">
             Tap once to begin timing and again to log each contraction.
             Everything is saved for you, even offline.
           </p>

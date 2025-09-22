@@ -71,38 +71,44 @@ export function HistoryView({
 
   return (
     <div className="flex flex-col gap-8">
-      <section className="rounded-3xl border border-slate-200 bg-white px-6 py-5 shadow-sm">
+      <section className="rounded-3xl border border-[#CFE5D6] bg-[#F8F3ED] px-4 py-5 shadow-sm sm:px-6">
         <header className="mb-5 flex flex-col gap-1">
-          <span className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-400">
+          <span className="text-xs font-semibold uppercase tracking-[0.4em] text-[#666666]">
             Today
           </span>
-          <div className="text-lg font-semibold text-slate-800">
+          <div className="text-lg font-semibold text-[#333333]">
             {formatSessionLabel(currentSessionId)}
           </div>
         </header>
-        <div className="grid grid-cols-3 gap-4 text-center text-sm text-slate-600">
-          <div className="rounded-2xl bg-sky-50 px-4 py-3">
-            <p className="text-xs font-medium uppercase tracking-[0.35em] text-sky-500">Total</p>
-            <p className="mt-1 text-xl font-semibold text-slate-900">{stats.totalToday}</p>
-            <p className="text-[11px] text-slate-400">Contractions logged</p>
+        <div className="grid grid-cols-1 gap-3 text-center text-sm sm:grid-cols-3 sm:gap-4">
+          <div className="rounded-2xl bg-[#D7EAF3] px-4 py-4">
+            <p className="text-xs font-medium uppercase tracking-[0.35em] text-[#666666]">
+              Total
+            </p>
+            <p className="mt-2 text-2xl font-semibold text-[#333333]">
+              {stats.totalToday}
+            </p>
+            <p className="text-[11px] text-[#666666]">Contractions logged</p>
           </div>
-          <div className="rounded-2xl bg-sky-50 px-4 py-3">
-            <p className="text-xs font-medium uppercase tracking-[0.35em] text-sky-500">
+          <div className="rounded-2xl bg-[#CFE5D6] px-4 py-4">
+            <p className="text-xs font-medium uppercase tracking-[0.35em] text-[#666666]">
               Avg duration
             </p>
-            <p className="mt-1 text-xl font-semibold text-slate-900">
+            <p className="mt-2 text-2xl font-semibold text-[#333333]">
               {formatDuration(stats.averageDurationSec)}
             </p>
-            <p className="text-[11px] text-slate-400">Active phase</p>
+            <p className="text-[11px] text-[#666666]">Active phase</p>
           </div>
-          <div className="rounded-2xl bg-sky-50 px-4 py-3">
-            <p className="text-xs font-medium uppercase tracking-[0.35em] text-sky-500">
+          <div className="rounded-2xl bg-[#FFE4D1] px-4 py-4">
+            <p className="text-xs font-medium uppercase tracking-[0.35em] text-[#666666]">
               Avg interval
             </p>
-            <p className="mt-1 text-xl font-semibold text-slate-900">
-              {stats.hasIntervalData ? formatDuration(stats.averageIntervalSec) : "—"}
+            <p className="mt-2 text-2xl font-semibold text-[#333333]">
+              {stats.hasIntervalData
+                ? formatDuration(stats.averageIntervalSec)
+                : "—"}
             </p>
-            <p className="text-[11px] text-slate-400">Rest between</p>
+            <p className="text-[11px] text-[#666666]">Rest between</p>
           </div>
         </div>
         <div className="mt-5 flex justify-center">
@@ -113,7 +119,7 @@ export function HistoryView({
             onPointerLeave={cancelClearHold}
             onPointerCancel={cancelClearHold}
             disabled={timelineEntries.length === 0}
-            className="rounded-full border border-rose-200 bg-rose-50 px-5 py-2 text-sm font-medium text-rose-600 transition hover:border-rose-300 hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-full border border-[#FADADD] bg-[#FADADD] px-5 py-2 text-sm font-medium text-[#333333] transition hover:border-[#F7C5CA] hover:bg-[#F7C5CA] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isHoldingClear ? "Keep holding to clear" : "Hold to clear today"}
           </button>
@@ -121,35 +127,43 @@ export function HistoryView({
       </section>
 
       <section className="space-y-4">
-        <header className="flex items-center justify-between text-xs font-medium uppercase tracking-[0.35em] text-slate-500">
+        <header className="flex items-center justify-between text-xs font-medium uppercase tracking-[0.35em] text-[#666666]">
           <span>Today&apos;s timeline</span>
           <span>{stats.totalToday} entries</span>
         </header>
-        <div className="max-h-80 overflow-y-auto rounded-3xl border border-slate-200 bg-white">
+        <div className="max-h-80 overflow-y-auto rounded-3xl border border-[#CFE5D6] bg-[#F8F3ED]">
           {timelineEntries.length === 0 ? (
-            <p className="px-6 py-10 text-center text-sm text-slate-500">
+            <p className="px-6 py-10 text-center text-sm text-[#666666]">
               No contractions logged yet today.
             </p>
           ) : (
-            <div className="divide-y divide-slate-200 text-sm text-slate-700">
+            <div className="divide-y divide-[#CFE5D6] text-sm text-[#333333]">
               {timelineEntries.map((entry) => {
                 const durationLabel = formatDuration(entry.durationSec);
                 const intervalLabel =
-                  entry.intervalSec != null ? `+${formatDuration(entry.intervalSec)}` : "—";
+                  entry.intervalSec != null
+                    ? `+${formatDuration(entry.intervalSec)}`
+                    : "—";
 
                 return (
                   <button
                     key={entry.id}
                     type="button"
                     onClick={() => onEditEntry(currentSessionId, entry.id)}
-                    className="grid w-full grid-cols-[auto_auto_auto_auto] items-center gap-4 px-6 py-4 text-left transition hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-sky-400"
+                    className="grid w-full grid-cols-[auto_auto_auto_auto] items-center gap-4 px-6 py-4 text-left transition hover:bg-[#CFE5D6] focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#CFE5D6]"
                   >
-                    <span className="font-semibold text-slate-400">#{entry.index}</span>
-                    <span className="font-mono text-base tabular-nums text-slate-800">
+                    <span className="font-semibold text-[#666666]">
+                      #{entry.index}
+                    </span>
+                    <span className="font-mono text-base tabular-nums text-[#333333]">
                       {timeFormatter.format(entry.start)}
                     </span>
-                    <span className="font-mono tabular-nums text-slate-900">{durationLabel}</span>
-                    <span className="font-mono tabular-nums text-slate-500">{intervalLabel}</span>
+                    <span className="font-mono tabular-nums text-[#333333]">
+                      {durationLabel}
+                    </span>
+                    <span className="font-mono tabular-nums text-[#666666]">
+                      {intervalLabel}
+                    </span>
                   </button>
                 );
               })}
@@ -159,41 +173,50 @@ export function HistoryView({
       </section>
 
       <section className="space-y-4">
-        <header className="flex items-center justify-between text-xs font-medium uppercase tracking-[0.35em] text-slate-500">
+        <header className="flex items-center justify-between text-xs font-medium uppercase tracking-[0.35em] text-[#666666]">
           <span>Past sessions</span>
           <span>{pastSessionIds.length}</span>
         </header>
         {pastSessionIds.length === 0 ? (
-          <p className="rounded-3xl border border-dashed border-slate-200 px-6 py-10 text-center text-sm text-slate-500">
+          <p className="rounded-3xl border border-dashed border-[#CFE5D6] px-6 py-10 text-center text-sm text-[#666666]">
             Previous days will appear here once logged.
           </p>
         ) : (
           <div className="space-y-4">
             {pastSessionIds.map((sessionId) => {
               const session = sessions[sessionId];
-              const entriesForSession = deriveDisplayEntries(session?.entries ?? []);
+              const entriesForSession = deriveDisplayEntries(
+                session?.entries ?? []
+              );
               const summary = calculateStats(entriesForSession);
 
               return (
                 <details
                   key={sessionId}
-                  className="overflow-hidden rounded-3xl border border-slate-200 bg-white text-sm text-slate-700"
+                  className="overflow-hidden rounded-3xl border border-[#CFE5D6] bg-[#F8F3ED] text-sm text-[#333333]"
                 >
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 transition hover:bg-[#CFE5D6]">
                     <div>
-                      <p className="text-sm font-semibold text-slate-900">
+                      <p className="text-sm font-semibold text-[#333333]">
                         {formatSessionLabel(sessionId)}
                       </p>
-                      <p className="text-xs text-slate-500">
-                        {summary.totalToday} contractions • Avg {formatDuration(summary.averageDurationSec)}
-                        {summary.hasIntervalData ? ` • Interval ${formatDuration(summary.averageIntervalSec)}` : ""}
+                      <p className="text-xs text-[#666666]">
+                        {summary.totalToday} contractions • Avg{" "}
+                        {formatDuration(summary.averageDurationSec)}
+                        {summary.hasIntervalData
+                          ? ` • Interval ${formatDuration(
+                              summary.averageIntervalSec
+                            )}`
+                          : ""}
                       </p>
                     </div>
-                    <span className="text-xs uppercase tracking-[0.35em] text-slate-400">View</span>
+                    <span className="text-xs uppercase tracking-[0.35em] text-[#666666]">
+                      View
+                    </span>
                   </summary>
-                  <div className="divide-y divide-slate-200">
+                  <div className="divide-y divide-[#CFE5D6]">
                     {entriesForSession.length === 0 ? (
-                      <p className="px-6 py-6 text-center text-sm text-slate-500">
+                      <p className="px-6 py-6 text-center text-sm text-[#666666]">
                         No contractions recorded.
                       </p>
                     ) : (
@@ -209,14 +232,20 @@ export function HistoryView({
                             key={entry.id}
                             type="button"
                             onClick={() => onEditEntry(sessionId, entry.id)}
-                            className="grid w-full grid-cols-[auto_auto_auto_auto] items-center gap-4 px-6 py-4 text-left transition hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-sky-400"
+                            className="grid w-full grid-cols-[auto_auto_auto_auto] items-center gap-4 px-6 py-4 text-left transition hover:bg-[#CFE5D6] focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#CFE5D6]"
                           >
-                            <span className="font-semibold text-slate-400">#{entry.index}</span>
-                            <span className="font-mono text-base tabular-nums text-slate-800">
+                            <span className="font-semibold text-[#666666]">
+                              #{entry.index}
+                            </span>
+                            <span className="font-mono text-base tabular-nums text-[#333333]">
                               {timeFormatter.format(entry.start)}
                             </span>
-                            <span className="font-mono tabular-nums text-slate-900">{durationLabel}</span>
-                            <span className="font-mono tabular-nums text-slate-500">{intervalLabel}</span>
+                            <span className="font-mono tabular-nums text-[#333333]">
+                              {durationLabel}
+                            </span>
+                            <span className="font-mono tabular-nums text-[#666666]">
+                              {intervalLabel}
+                            </span>
                           </button>
                         );
                       })
