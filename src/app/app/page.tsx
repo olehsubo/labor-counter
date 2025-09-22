@@ -24,7 +24,6 @@ export default function AppPage() {
     sessions,
     currentSessionId,
     undoLast,
-    startNewSession,
     toggleContraction,
     clearCurrentSession,
     openEditor,
@@ -63,7 +62,6 @@ export default function AppPage() {
             recentEntries={recentEntries}
             onToggle={toggleContraction}
             onUndo={undoLast}
-            onNewSession={startNewSession}
             onShowHistory={() => setViewMode("history")}
             onEditEntry={(entryId) => openEditor(currentSessionId, entryId)}
           />

@@ -52,7 +52,6 @@ type UseContractionTrackerReturn = {
   sessions: Record<string, Session>;
   currentSessionId: string;
   undoLast: () => void;
-  startNewSession: () => void;
   toggleContraction: () => void;
   clearCurrentSession: () => void;
   openEditor: (sessionId: string, entryId: string) => void;
@@ -376,34 +375,6 @@ export function useContractionTracker(): UseContractionTrackerReturn {
     });
   }, [currentSessionId, sessions, closeConfirmationModal]);
 
-  const startNewSession = useCallback(() => {
-    const todayId = getTodaySessionId();
-
-    setConfirmationModal({
-      isOpen: true,
-      title: "Start New Session",
-      message:
-        "Start a fresh session for today? Previous entries stay in history.",
-      confirmText: "Start New Session",
-      cancelText: "Cancel",
-      variant: "default",
-      onConfirm: () => {
-        setSessions((prev) => {
-          if (prev[todayId]) {
-            return prev;
-          }
-          return {
-            ...prev,
-            [todayId]: buildSession(todayId),
-          };
-        });
-
-        setCurrentSessionId(todayId);
-        closeConfirmationModal();
-      },
-    });
-  }, [closeConfirmationModal]);
-
   const openEditor = useCallback(
     (sessionId: string, entryId: string) => {
       const session = sessions[sessionId];
@@ -581,7 +552,6 @@ export function useContractionTracker(): UseContractionTrackerReturn {
     sessions,
     currentSessionId,
     undoLast,
-    startNewSession,
     toggleContraction,
     clearCurrentSession,
     openEditor,

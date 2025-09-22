@@ -12,7 +12,6 @@ type LiveViewProps = {
   recentEntries: DisplayEntry[];
   onToggle: () => void;
   onUndo: () => void;
-  onNewSession: () => void;
   onShowHistory: () => void;
   onEditEntry: (entryId: string) => void;
 };
@@ -23,7 +22,6 @@ export function LiveView({
   recentEntries,
   onToggle,
   onUndo,
-  onNewSession,
   onShowHistory,
   onEditEntry,
 }: LiveViewProps) {
@@ -52,13 +50,6 @@ export function LiveView({
           className="rounded-full border border-theme-accent bg-theme-accent px-5 py-2 text-sm font-medium text-theme-text transition hover:border-theme-accent-hover hover:bg-theme-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
           Undo
-        </button>
-        <button
-          type="button"
-          onClick={onNewSession}
-          className="rounded-full border border-theme-accent-light bg-theme-accent-light px-5 py-2 text-sm font-medium text-theme-text transition hover:border-theme-accent-light/80 hover:bg-theme-accent-light/80"
-        >
-          New Day
         </button>
         <button
           type="button"
