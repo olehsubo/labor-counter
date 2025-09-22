@@ -29,25 +29,25 @@ export function ConfirmationModal({
         return {
           icon: "⚠️",
           confirmButton:
-            "rounded-full border border-[#FFE4D1] bg-[#FFE4D1] px-4 py-2 text-sm font-semibold text-[#333333] shadow-sm transition hover:bg-[#FFD4B8]",
+            "rounded-full border border-theme-accent-orange bg-theme-accent-orange px-4 py-2 text-sm font-semibold text-theme-text shadow-sm transition hover:bg-theme-accent-orange/80",
           cancelButton:
-            "rounded-full border border-transparent px-4 py-2 text-sm font-medium text-[#666666] transition hover:text-[#333333]",
+            "rounded-full border border-transparent px-4 py-2 text-sm font-medium text-theme-text-secondary transition hover:text-theme-text",
         };
       case "danger":
         return {
           icon: "🗑️",
           confirmButton:
-            "rounded-full border border-[#FADADD] bg-[#FADADD] px-4 py-2 text-sm font-semibold text-[#333333] shadow-sm transition hover:bg-[#F7C5CA]",
+            "rounded-full border border-theme-accent-pink bg-theme-accent-pink px-4 py-2 text-sm font-semibold text-theme-text shadow-sm transition hover:bg-theme-accent-pink-hover",
           cancelButton:
-            "rounded-full border border-transparent px-4 py-2 text-sm font-medium text-[#666666] transition hover:text-[#333333]",
+            "rounded-full border border-transparent px-4 py-2 text-sm font-medium text-theme-text-secondary transition hover:text-theme-text",
         };
       default:
         return {
           icon: "❓",
           confirmButton:
-            "rounded-full border border-[#CFE5D6] bg-[#CFE5D6] px-4 py-2 text-sm font-semibold text-[#333333] shadow-sm transition hover:bg-[#B8D9C4]",
+            "rounded-full border border-theme-accent bg-theme-accent px-4 py-2 text-sm font-semibold text-theme-text shadow-sm transition hover:bg-theme-accent-hover",
           cancelButton:
-            "rounded-full border border-transparent px-4 py-2 text-sm font-medium text-[#666666] transition hover:text-[#333333]",
+            "rounded-full border border-transparent px-4 py-2 text-sm font-medium text-theme-text-secondary transition hover:text-theme-text",
         };
     }
   };
@@ -55,20 +55,22 @@ export function ConfirmationModal({
   const styles = getVariantStyles();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#333333]/20 px-4 py-6">
-      <div className="w-full max-w-md rounded-3xl bg-[#F8F3ED] p-6 shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-theme-text/20 px-4 py-6">
+      <div className="w-full max-w-md rounded-3xl bg-theme-surface p-6 shadow-xl border border-theme-border">
         <div className="flex items-start justify-between">
           <div className="flex items-start gap-3">
             <div className="text-2xl">{styles.icon}</div>
             <div>
-              <h2 className="text-lg font-semibold text-[#333333]">{title}</h2>
-              <p className="mt-1 text-sm text-[#666666]">{message}</p>
+              <h2 className="text-lg font-semibold text-theme-text">{title}</h2>
+              <p className="mt-1 text-sm text-theme-text-secondary">
+                {message}
+              </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-full border border-transparent px-2 py-1 text-sm text-[#999999] transition hover:text-[#333333]"
+            className="rounded-full border border-transparent px-2 py-1 text-sm text-theme-text-secondary transition hover:text-theme-text"
             aria-label="Close modal"
           >
             ✕

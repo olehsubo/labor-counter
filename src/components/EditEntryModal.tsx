@@ -43,40 +43,40 @@ export function EditEntryModal({
     editingDurationSec - editingOriginalDurationSec;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#333333]/20 px-4 py-6">
-      <div className="w-full max-w-md rounded-3xl bg-[#F8F3ED] p-6 shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-theme-text/20 px-4 py-6">
+      <div className="w-full max-w-md rounded-3xl bg-theme-surface p-6 shadow-xl border border-theme-border">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-[#333333]">
+            <h2 className="text-lg font-semibold text-theme-text">
               Adjust entry
             </h2>
-            <p className="mt-1 text-sm text-[#666666]">
+            <p className="mt-1 text-sm text-theme-text-secondary">
               Fine-tune the logged times by up to ±2 minutes.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-transparent px-2 py-1 text-sm text-[#999999] transition hover:text-[#333333]"
+            className="rounded-full border border-transparent px-2 py-1 text-sm text-theme-text-secondary transition hover:text-theme-text"
             aria-label="Close editor"
           >
             ✕
           </button>
         </div>
 
-        <div className="mt-6 space-y-6 text-sm text-[#333333]">
+        <div className="mt-6 space-y-6 text-sm text-theme-text">
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#666666]">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-theme-text-secondary">
                   Start time
                 </p>
-                <p className="text-base font-medium text-[#333333]">
+                <p className="text-base font-medium text-theme-text">
                   {timeWithSecondsFormatter.format(
                     new Date(editing.draftStart)
                   )}
                 </p>
-                <p className="text-xs text-[#666666]">
+                <p className="text-xs text-theme-text-secondary">
                   Δ {formatSignedDuration(editingStartDeltaSec)}
                 </p>
               </div>
@@ -86,7 +86,7 @@ export function EditEntryModal({
                     key={`start-${seconds}`}
                     type="button"
                     onClick={() => onAdjust("start", seconds)}
-                    className="rounded-full border border-[#CFE5D6] bg-[#F8F3ED] px-3 py-1 text-xs font-medium text-[#333333] transition hover:border-[#B8D9C4] hover:bg-[#CFE5D6]"
+                    className="rounded-full border border-theme-accent bg-theme-surface px-3 py-1 text-xs font-medium text-theme-text transition hover:border-theme-accent-hover hover:bg-theme-accent"
                   >
                     {formatSignedDuration(seconds)}
                   </button>
@@ -95,13 +95,13 @@ export function EditEntryModal({
             </div>
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#666666]">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-theme-text-secondary">
                   End time
                 </p>
-                <p className="text-base font-medium text-[#333333]">
+                <p className="text-base font-medium text-theme-text">
                   {timeWithSecondsFormatter.format(new Date(editing.draftEnd))}
                 </p>
-                <p className="text-xs text-[#666666]">
+                <p className="text-xs text-theme-text-secondary">
                   Δ {formatSignedDuration(editingEndDeltaSec)}
                 </p>
               </div>
@@ -111,7 +111,7 @@ export function EditEntryModal({
                     key={`end-${seconds}`}
                     type="button"
                     onClick={() => onAdjust("end", seconds)}
-                    className="rounded-full border border-[#CFE5D6] bg-[#F8F3ED] px-3 py-1 text-xs font-medium text-[#333333] transition hover:border-[#B8D9C4] hover:bg-[#CFE5D6]"
+                    className="rounded-full border border-theme-accent bg-theme-surface px-3 py-1 text-xs font-medium text-theme-text transition hover:border-theme-accent-hover hover:bg-theme-accent"
                   >
                     {formatSignedDuration(seconds)}
                   </button>
@@ -120,14 +120,14 @@ export function EditEntryModal({
             </div>
           </div>
 
-          <div className="rounded-2xl border border-[#CFE5D6] bg-[#CFE5D6] px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#666666]">
+          <div className="rounded-2xl border border-theme-accent bg-theme-accent px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-theme-text-secondary">
               Duration
             </p>
-            <p className="mt-1 text-xl font-semibold text-[#333333]">
+            <p className="mt-1 text-xl font-semibold text-theme-text">
               {formatDuration(editingDurationSec)}
             </p>
-            <p className="text-xs text-[#666666]">
+            <p className="text-xs text-theme-text-secondary">
               {editingDurationDeltaSec === 0
                 ? `Was ${formatDuration(editingOriginalDurationSec)}`
                 : `Was ${formatDuration(
@@ -141,7 +141,7 @@ export function EditEntryModal({
           <button
             type="button"
             onClick={onReset}
-            className="rounded-full border border-[#CFE5D6] bg-[#F8F3ED] px-4 py-2 text-sm font-medium text-[#333333] transition hover:border-[#B8D9C4] hover:bg-[#CFE5D6]"
+            className="rounded-full border border-theme-accent bg-theme-surface px-4 py-2 text-sm font-medium text-theme-text transition hover:border-theme-accent-hover hover:bg-theme-accent"
           >
             Reset
           </button>
@@ -149,14 +149,14 @@ export function EditEntryModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full border border-transparent px-4 py-2 text-sm font-medium text-[#666666] transition hover:text-[#333333]"
+              className="rounded-full border border-transparent px-4 py-2 text-sm font-medium text-theme-text-secondary transition hover:text-theme-text"
             >
               Cancel
             </button>
             <button
               type="button"
               onClick={onSave}
-              className="rounded-full border border-[#CFE5D6] bg-[#CFE5D6] px-4 py-2 text-sm font-semibold text-[#333333] shadow-sm transition hover:bg-[#B8D9C4]"
+              className="rounded-full border border-theme-accent bg-theme-accent px-4 py-2 text-sm font-semibold text-theme-text shadow-sm transition hover:bg-theme-accent-hover"
             >
               Save changes
             </button>

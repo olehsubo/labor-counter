@@ -1,8 +1,47 @@
 @import "tailwindcss";
 
+/* Light theme (default) */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Theme colors */
+  --theme-bg: #f8f3ed;
+  --theme-text: #333333;
+  --theme-text-secondary: #666666;
+  --theme-surface: #f8f3ed;
+  --theme-surface-hover: #f0e8dd;
+  --theme-border: #cfe5d6;
+  --theme-accent: #cfe5d6;
+  --theme-accent-hover: #b8d4c1;
+  --theme-accent-light: #d7eaf3;
+  --theme-accent-pink: #fadadd;
+  --theme-accent-pink-hover: #f7c5ca;
+  --theme-accent-orange: #ffe4d1;
+  --theme-shadow: rgba(207, 229, 214, 0.35);
+  --theme-shadow-pink: rgba(250, 218, 221, 0.35);
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+
+  /* Theme colors */
+  --theme-bg: #1a1a1a;
+  --theme-text: #e5e5e5;
+  --theme-text-secondary: #a3a3a3;
+  --theme-surface: #262626;
+  --theme-surface-hover: #404040;
+  --theme-border: #404040;
+  --theme-accent: #4ade80;
+  --theme-accent-hover: #22c55e;
+  --theme-accent-light: #0ea5e9;
+  --theme-accent-pink: #f472b6;
+  --theme-accent-pink-hover: #ec4899;
+  --theme-accent-orange: #fb923c;
+  --theme-shadow: rgba(74, 222, 128, 0.2);
+  --theme-shadow-pink: rgba(244, 114, 182, 0.2);
 }
 
 @theme inline {
@@ -10,17 +49,27 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Theme utility classes */
+  --color-theme-bg: var(--theme-bg);
+  --color-theme-text: var(--theme-text);
+  --color-theme-text-secondary: var(--theme-text-secondary);
+  --color-theme-surface: var(--theme-surface);
+  --color-theme-surface-hover: var(--theme-surface-hover);
+  --color-theme-border: var(--theme-border);
+  --color-theme-accent: var(--theme-accent);
+  --color-theme-accent-hover: var(--theme-accent-hover);
+  --color-theme-accent-light: var(--theme-accent-light);
+  --color-theme-accent-pink: var(--theme-accent-pink);
+  --color-theme-accent-pink-hover: var(--theme-accent-pink-hover);
+  --color-theme-accent-orange: var(--theme-accent-orange);
+  --color-theme-shadow: var(--theme-shadow);
+  --color-theme-shadow-pink: var(--theme-shadow-pink);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--theme-bg);
+  color: var(--theme-text);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }

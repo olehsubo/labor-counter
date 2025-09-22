@@ -32,10 +32,10 @@ export function LiveView({
       <button
         type="button"
         onClick={onToggle}
-        className={`flex h-48 w-full flex-col items-center justify-center gap-4 rounded-[32px] border-2 text-xl font-semibold transition-transform focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#CFE5D6] ${
+        className={`flex h-48 w-full flex-col items-center justify-center gap-4 rounded-[32px] border-2 text-xl font-semibold transition-transform focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-theme-accent ${
           contractionState === "contracting"
-            ? "border-[#FADADD] bg-[#FADADD] text-[#333333] shadow-[0_25px_50px_-12px_rgba(250,218,221,0.35)]"
-            : "border-[#CFE5D6] bg-[#F8F3ED] text-[#333333] shadow-[0_20px_45px_-15px_rgba(207,229,214,0.35)]"
+            ? "border-theme-accent-pink bg-theme-accent-pink text-theme-text shadow-[0_25px_50px_-12px_var(--theme-shadow-pink)]"
+            : "border-theme-accent bg-theme-surface text-theme-text shadow-[0_20px_45px_-15px_var(--theme-shadow)]"
         } active:scale-[0.99]`}
       >
         <span className="text-5xl font-mono tabular-nums tracking-tight">
@@ -49,34 +49,34 @@ export function LiveView({
           type="button"
           onClick={onUndo}
           disabled={recentEntries.length === 0}
-          className="rounded-full border border-[#CFE5D6] bg-[#CFE5D6] px-5 py-2 text-sm font-medium text-[#333333] transition hover:border-[#B8D9C4] hover:bg-[#B8D9C4] disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-full border border-theme-accent bg-theme-accent px-5 py-2 text-sm font-medium text-theme-text transition hover:border-theme-accent-hover hover:bg-theme-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
           Undo
         </button>
         <button
           type="button"
           onClick={onNewSession}
-          className="rounded-full border border-[#D7EAF3] bg-[#D7EAF3] px-5 py-2 text-sm font-medium text-[#333333] transition hover:border-[#C5E1F0] hover:bg-[#C5E1F0]"
+          className="rounded-full border border-theme-accent-light bg-theme-accent-light px-5 py-2 text-sm font-medium text-theme-text transition hover:border-theme-accent-light/80 hover:bg-theme-accent-light/80"
         >
           New Day
         </button>
         <button
           type="button"
           onClick={onShowHistory}
-          className="rounded-full border border-transparent px-5 py-2 text-sm font-medium text-[#666666] underline-offset-4 transition hover:underline hover:text-[#333333]"
+          className="rounded-full border border-transparent px-5 py-2 text-sm font-medium text-theme-text-secondary underline-offset-4 transition hover:underline hover:text-theme-text"
         >
           History
         </button>
       </div>
 
       <section className="space-y-4">
-        <header className="flex items-center justify-between text-xs font-medium uppercase tracking-[0.35em] text-[#666666]">
+        <header className="flex items-center justify-between text-xs font-medium uppercase tracking-[0.35em] text-theme-text-secondary">
           <span>Recent</span>
           <span>{Math.min(recentEntries.length, MAX_RECENT_ENTRIES)}</span>
         </header>
-        <div className="divide-y divide-[#CFE5D6] overflow-hidden rounded-3xl border border-[#CFE5D6] bg-[#F8F3ED]">
+        <div className="divide-y divide-theme-border overflow-hidden rounded-3xl border border-theme-border bg-theme-surface">
           {recentEntries.length === 0 ? (
-            <p className="px-6 py-10 text-center text-sm text-[#666666]">
+            <p className="px-6 py-10 text-center text-sm text-theme-text-secondary">
               Your contractions will appear here
             </p>
           ) : (
@@ -92,18 +92,18 @@ export function LiveView({
                   key={entry.id}
                   type="button"
                   onClick={() => onEditEntry(entry.id)}
-                  className="grid w-full grid-cols-[auto_auto_auto_auto] items-center gap-4 px-6 py-4 text-left text-sm text-[#333333] transition hover:bg-[#CFE5D6] focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#CFE5D6]"
+                  className="grid w-full grid-cols-[auto_auto_auto_auto] items-center gap-4 px-6 py-4 text-left text-sm text-theme-text transition hover:bg-theme-accent focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-theme-accent"
                 >
-                  <span className="font-semibold text-[#666666]">
+                  <span className="font-semibold text-theme-text-secondary">
                     #{entry.index}
                   </span>
-                  <span className="font-mono text-base tabular-nums text-[#333333]">
+                  <span className="font-mono text-base tabular-nums text-theme-text">
                     {timeFormatter.format(entry.start)}
                   </span>
-                  <span className="font-mono tabular-nums text-[#333333]">
+                  <span className="font-mono tabular-nums text-theme-text">
                     {durationLabel}
                   </span>
-                  <span className="font-mono tabular-nums text-[#666666]">
+                  <span className="font-mono tabular-nums text-theme-text-secondary">
                     {intervalLabel}
                   </span>
                 </button>

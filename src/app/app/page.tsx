@@ -7,6 +7,7 @@ import { EditEntryModal } from "../../components/EditEntryModal";
 import { HistoryView } from "../../components/HistoryView";
 import { LiveView } from "../../components/LiveView";
 import { StorageWarningBanner } from "../../components/StorageWarningBanner";
+import { ThemeToggle } from "../../components/ThemeToggle";
 import { ViewMode, ViewToggle } from "../../components/ViewToggle";
 import { useContractionTracker } from "../../hooks/useContractionTracker";
 
@@ -37,15 +38,20 @@ export default function AppPage() {
   } = useContractionTracker();
 
   return (
-    <div className="min-h-screen bg-[#F8F3ED] text-[#333333]">
+    <div className="min-h-screen bg-theme-bg text-theme-text">
       <main className="mx-auto flex max-w-3xl flex-col gap-10 px-6 py-16">
         {storageWarning && <StorageWarningBanner />}
 
         <div className="flex flex-col items-center gap-3 text-center">
-          <h1 className="text-2xl font-semibold text-[#333333]">
-            Contraction Tracker
-          </h1>
-          <p className="text-sm text-[#666666]">Tap to start, tap to stop</p>
+          <div className="flex items-center gap-4">
+            <h1 className="text-2xl font-semibold text-theme-text">
+              Contraction Tracker
+            </h1>
+            <ThemeToggle />
+          </div>
+          <p className="text-sm text-theme-text-secondary">
+            Tap to start, tap to stop
+          </p>
         </div>
 
         <ViewToggle mode={viewMode} onChange={setViewMode} />
